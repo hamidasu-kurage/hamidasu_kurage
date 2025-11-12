@@ -3,19 +3,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>はみ出しますか？</title>
+  <title>はみ出しますか？（ラジオ版）</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main class="wrap">
     <h1 class="question">はみ出しますか？</h1>
-    <div class="controls" id="controls">
-      <button id="yesBtn" class="btn yes">はい</button>
-      <button id="noBtn" class="btn no">いいえ</button>
-    </div>
+
+    <form class="controls" id="controls" aria-labelledby="question">
+      <!-- radio inputs are visually hidden; labels act as big buttons -->
+      <input type="radio" id="choice_yes" name="choice" value="yes" class="visually-hidden">
+      <label for="choice_yes" class="btn yes" role="button" aria-pressed="false">はい</label>
+
+      <input type="radio" id="choice_no" name="choice" value="no" class="visually-hidden">
+      <label for="choice_no" class="btn no" role="button" aria-pressed="false">いいえ</label>
+    </form>
+
     <div id="message" class="message" aria-live="polite"></div>
+
+    <!-- audio file -->
+    <audio id="audio" preload="none" src="kurage_demo.mp3"></audio>
   </main>
 
-  <script src="main.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
