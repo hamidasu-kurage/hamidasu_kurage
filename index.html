@@ -1,30 +1,90 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>はみ出しますか？（ラジオ版）</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <title>はみ出しますか？</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #000;
+      background-image: url("back_hami.jpg");   /* 背景画像（画面いっぱい） */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    /* YES / NO 全体のレイアウト */
+    .buttons {
+      position: fixed;               /* 画面に対して固定配置 */
+      left: 0;
+      right: 0;
+      bottom: 16vh;                  /* 画面下から少し上に配置（デザインのイメージに近づける） */
+      display: flex;
+      justify-content: space-evenly; /* 左右に広げて配置 */
+      align-items: center;
+      padding: 0 24px;
+      pointer-events: none;          /* コンテナ自体はタップを受けない */
+    }
+
+    .buttons button {
+      pointer-events: auto;          /* ボタンだけタップ可能 */
+      background: transparent;
+      border: none;
+      padding: 0;
+      border-radius: 24px;           /* タップ領域の形だけ */
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    .buttons button img {
+      display: block;
+      margin: 0 auto;
+      width: 220px;                  /* ほぼ固定サイズ（レイアウト画像に近づける） */
+      height: auto;
+      max-width: 42vw;               /* 画面が極端に小さい場合だけ少し縮む（安全対策・推測です） */
+      transition: filter 0.15s ease;
+    }
+
+    /* タップ時に画像の周りを白くぼんやりハイライト */
+    .buttons button:active img,
+    .buttons button:focus-visible img {
+      filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.9));
+    }
+
+    /* とても小さいスマホ向け微調整 */
+    @media (max-width: 360px) {
+      .buttons {
+        bottom: 14vh;
+        padding: 0 16px;
+      }
+      .buttons button img {
+        width: 190px;
+        max-width: 45vw;
+      }
+    }
+  </style>
 </head>
 <body>
-  <main class="wrap">
-    <h1 class="question">はみ出しますか？</h1>
 
-    <form class="controls" id="controls" aria-labelledby="question">
-      <!-- radio inputs are visually hidden; labels act as big buttons -->
-      <input type="radio" id="choice_yes" name="choice" value="yes" class="visually-hidden">
-      <label for="choice_yes" class="btn yes" role="button" aria-pressed="false">はい</label>
+  <div class="buttons">
+    <button class="yes" type="button">
+      <img src="yes.png" alt="YES">
+    </button>
+    <button class="no" type="button">
+      <img src="no.png" alt="NO">
+    </button>
+  </div>
 
-      <input type="radio" id="choice_no" name="choice" value="no" class="visually-hidden">
-      <label for="choice_no" class="btn no" role="button" aria-pressed="false">いいえ</label>
-    </form>
-
-    <div id="message" class="message" aria-live="polite"></div>
-
-    <!-- audio file -->
-    <audio id="audio" preload="none" src="kurage_demo.mp3"></audio>
-  </main>
-
-  <script src="script.js"></script>
 </body>
 </html>
