@@ -14,10 +14,11 @@
 
     body {
       background: #000;
-      background-image: url("back_hami.jpg");   /* 背景画像（画面いっぱい） */
-      background-size: cover;
-      background-position: center;
+      background-image: url("back_hami.jpg");
+      background-size: cover;          /* 画面いっぱい */
+      background-position: center;     /* 画像の中央を基準 */
       background-repeat: no-repeat;
+      background-attachment: fixed;    /* 背景を中央に固定 */
 
       min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -25,23 +26,23 @@
 
     /* YES / NO 全体のレイアウト */
     .buttons {
-      position: fixed;               /* 画面に対して固定配置 */
+      position: fixed;
       left: 0;
       right: 0;
-      bottom: 16vh;                  /* 画面下から少し上に配置（デザインのイメージに近づける） */
+      bottom: 16vh;
       display: flex;
-      justify-content: space-evenly; /* 左右に広げて配置 */
+      justify-content: space-evenly;
       align-items: center;
       padding: 0 24px;
-      pointer-events: none;          /* コンテナ自体はタップを受けない */
+      pointer-events: none;
     }
 
     .buttons button {
-      pointer-events: auto;          /* ボタンだけタップ可能 */
+      pointer-events: auto;
       background: transparent;
       border: none;
       padding: 0;
-      border-radius: 24px;           /* タップ領域の形だけ */
+      border-radius: 24px;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
       outline: none;
@@ -50,19 +51,18 @@
     .buttons button img {
       display: block;
       margin: 0 auto;
-      width: 220px;                  /* ほぼ固定サイズ（レイアウト画像に近づける） */
+      width: 220px;          /* ほぼ固定サイズ */
       height: auto;
-      max-width: 42vw;               /* 画面が極端に小さい場合だけ少し縮む（安全対策・推測です） */
+      max-width: 42vw;       /* 画面が小さいときだけ少し縮む（安全用・推測です） */
       transition: filter 0.15s ease;
     }
 
-    /* タップ時に画像の周りを白くぼんやりハイライト */
+    /* タップ時に白くぼんやりハイライト */
     .buttons button:active img,
     .buttons button:focus-visible img {
       filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.9));
     }
 
-    /* とても小さいスマホ向け微調整 */
     @media (max-width: 360px) {
       .buttons {
         bottom: 14vh;
