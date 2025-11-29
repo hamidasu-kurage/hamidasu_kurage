@@ -12,24 +12,41 @@
       padding: 0;
     }
 
-    body {
-      background: #000;
-      background-image: url("back_hami.jpg");
-      background-size: cover;          /* 画面いっぱい */
-      background-position: center;     /* 画像の中央を基準 */
-      background-repeat: no-repeat;
-      background-attachment: fixed;    /* 背景を中央に固定 */
-
-      min-height: 100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    html, body {
+      height: 100%;
     }
 
-    /* YES / NO 全体のレイアウト */
-    .buttons {
+    body {
+      background: #000;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden; /* 見かけ上のスクロールだけにする */
+    }
+
+    /* 背景＋Yes/No をまとめたシーン */
+    .scene {
       position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 16vh;
+      inset: 0;
+      background-image: url("back_hami.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      padding-bottom: 16vh;
+      transition: transform 0.8s ease-in, opacity 0.8s ease-in;
+    }
+
+    /* No タップ後に上へスライドアウト */
+    .scene.slide-out {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+
+    /* Yes / No ボタン配置 */
+    .buttons {
+      width: 100%;
+      max-width: 500px;
       display: flex;
       justify-content: space-evenly;
       align-items: center;
@@ -51,40 +68,111 @@
     .buttons button img {
       display: block;
       margin: 0 auto;
-      width: 220px;          /* ほぼ固定サイズ */
+      width: 220px;           /* 固定サイズ寄り */
+      max-width: 42vw;
       height: auto;
-      max-width: 42vw;       /* 画面が小さいときだけ少し縮む（安全用・推測です） */
       transition: filter 0.15s ease;
     }
 
-    /* タップ時に白くぼんやりハイライト */
+    /* タップ時のハイライト */
     .buttons button:active img,
     .buttons button:focus-visible img {
       filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.9));
     }
 
     @media (max-width: 360px) {
-      .buttons {
-        bottom: 14vh;
-        padding: 0 16px;
+      .scene {
+        padding-bottom: 14vh;
       }
       .buttons button img {
         width: 190px;
         max-width: 45vw;
       }
     }
+
+    /* 「またね。」表示エリア */
+    .again {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    /* フォントをアウトライン風に（推測です） */
+    .again-text {
+      font-size: 2.8rem;
+      letter-spacing: 0.15em;
+      color: transparent;
+      -webkit-text-stroke: 1.5px #dcdcdc;
+      text-transform: none;
+      /* ドットっぽいガタガタ感を少しだけ再現（軽い影） */
+      text-shadow:
+        1px 0 #dcdcdc,
+        0 1px #dcdcdc,
+        -1px 0 #dcdcdc,
+        0 -1px #dcdcdc;
+    }
+
+    /* フェードインアニメーション */
+    .again.show {
+      animation: fade-in-text 1s ease-out forwards;
+    }
+
+    @keyframes fade-in-text {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 <body>
 
-  <div class="buttons">
-    <button class="yes" type="button">
-      <img src="yes.png" alt="YES">
-    </button>
-    <button class="no" type="button">
-      <img src="no.png" alt="NO">
-    </button>
+  <!-- 背景＋Yes/No -->
+  <div class="scene" id="scene">
+    <div class="buttons">
+      <button class="yes" type="button">
+        <img src="yes.png" alt="YES">
+      </button>
+      <button class="no" type="button" id="noButton">
+        <img src="no.png" alt="NO">
+      </button>
+    </div>
   </div>
+
+  <!-- No を押したあとに出てくる「またね。」 -->
+  <div class="again" id="again">
+    <div class="again-text">またね。</div>
+  </div>
+
+  <script>
+    const noButton = document.getElementById('noButton');
+    const scene = document.getElementById('scene');
+    const again = document.getElementById('again');
+
+    let finished = false;
+
+    noButton.addEventListener('click', () => {
+      if (finished) return;
+      finished = true;
+
+      // 背景＋Yes/No を上に流して消す
+      scene.classList.add('slide-out');
+
+      // 少し遅らせて「またね。」をフェードイン
+      setTimeout(() => {
+        again.classList.add('show');
+      }, 800); // scene の transition と合わせる
+    });
+  </script>
 
 </body>
 </html>
