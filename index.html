@@ -22,28 +22,35 @@
       overflow: hidden; /* 見かけ上のスクロールだけにする */
     }
 
-    /* 背景＋Yes/No をまとめたシーン */
+    /* ===== 最初のシーン（はみだす？ ＋ YES / NO） ===== */
+
     .scene {
       position: fixed;
       inset: 0;
       background-image: url("back_hami.jpg");
       background-size: cover;
-      background-position: center;
+      background-position: center;   /* 常に中央に配置 */
       background-repeat: no-repeat;
       display: flex;
       justify-content: center;
       align-items: flex-end;
       padding-bottom: 16vh;
       transition: transform 0.8s ease-in, opacity 0.8s ease-in;
+      z-index: 1;
     }
 
-    /* No タップ後に上へスライドアウト */
-    .scene.slide-out {
+    /* NO のとき：上方向へスライドアウト */
+    .scene.slide-up {
       transform: translateY(-100%);
       opacity: 0;
     }
 
-    /* Yes / No ボタン配置 */
+    /* YES のとき：下方向へスライドアウト */
+    .scene.slide-down {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+
     .buttons {
       width: 100%;
       max-width: 500px;
@@ -68,7 +75,7 @@
     .buttons button img {
       display: block;
       margin: 0 auto;
-      width: 220px;           /* 固定サイズ寄り */
+      width: 220px;         /* ほぼ固定サイズ */
       max-width: 42vw;
       height: auto;
       transition: filter 0.15s ease;
@@ -90,7 +97,8 @@
       }
     }
 
-    /* 「またね。」表示エリア */
+    /* ===== NO 後の「またね。」シーン ===== */
+
     .again {
       position: fixed;
       inset: 0;
@@ -100,16 +108,14 @@
       pointer-events: none;
       opacity: 0;
       transform: translateY(20px);
+      z-index: 2;
     }
 
-    /* フォントをアウトライン風に（推測です） */
     .again-text {
       font-size: 2.8rem;
       letter-spacing: 0.15em;
       color: transparent;
       -webkit-text-stroke: 1.5px #dcdcdc;
-      text-transform: none;
-      /* ドットっぽいガタガタ感を少しだけ再現（軽い影） */
       text-shadow:
         1px 0 #dcdcdc,
         0 1px #dcdcdc,
@@ -117,7 +123,6 @@
         0 -1px #dcdcdc;
     }
 
-    /* フェードインアニメーション */
     .again.show {
       animation: fade-in-text 1s ease-out forwards;
     }
@@ -132,14 +137,75 @@
         transform: translateY(0);
       }
     }
+
+    /* ===== YES 後のクラゲ背景シーン ===== */
+
+    .scene-yes {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transform: translateY(-100%); /* 上の方に待機 */
+      transition: transform 0.8s ease-in, opacity 0.8s ease-in;
+      z-index: 1;
+    }
+
+    /* ぼかした背景だけに blur をかける */
+    .scene-yes .bg {
+      position: absolute;
+      inset: 0;
+      background-image: url("kurage.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: blur(8px);
+      transform: scale(1.05); /* ブラーで縁が切れないように少し拡大 */
+    }
+
+    .scene-yes .overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(0,0,0,0.0), rgba(0,0,0,0.65));
+    }
+
+    .scene-yes .content {
+      position: relative;
+      padding: 0 10vw;
+      text-align: center;
+      color: #f2f2f2;
+      max-width: 640px;
+      z-index: 2;
+    }
+
+    .scene-yes .title {
+      font-size: 2.2rem;
+      margin-bottom: 1.6rem;
+      letter-spacing: 0.25em;
+    }
+
+    .scene-yes .lyrics {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      white-space: pre-line;
+    }
+
+    /* YES でシーンを入場させる */
+    .scene-yes.enter {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
   </style>
 </head>
 <body>
 
-  <!-- 背景＋Yes/No -->
+  <!-- 最初のシーン（はみだす？ ＋ YES / NO） -->
   <div class="scene" id="scene">
     <div class="buttons">
-      <button class="yes" type="button">
+      <button class="yes" type="button" id="yesButton">
         <img src="yes.png" alt="YES">
       </button>
       <button class="no" type="button" id="noButton">
@@ -148,29 +214,81 @@
     </div>
   </div>
 
-  <!-- No を押したあとに出てくる「またね。」 -->
+  <!-- NO ルート：「またね。」 -->
   <div class="again" id="again">
     <div class="again-text">またね。</div>
   </div>
 
+  <!-- YES ルート：ぼかしたクラゲ背景＋テキスト -->
+  <div class="scene-yes" id="sceneYes">
+    <div class="bg"></div>
+    <div class="overlay"></div>
+
+    <div class="content">
+      <div class="title">QRgeCODE</div>
+      <div class="lyrics">
+海月のように ゆらゆらと
+青く燃える 月に唄えば
+この世界はみだし 生きて行けるわ
+夜に祈る花みたいに
+
+雨の窓に浮かんでる
+滲むリズムざわめきだして
+垂れた腕に灯る火を消して
+まだ見ぬ光へ
+
+海月のように ゆらゆらと
+青く燃える 月に唄えば
+この世界はみだし 生きて行けるわ
+夜に祈る花みたいに
+      </div>
+    </div>
+  </div>
+
+  <!-- 音楽（あとで src を差し替えてください） -->
+  <audio id="bgm" src="music.mp3"></audio>
+
   <script>
     const noButton = document.getElementById('noButton');
+    const yesButton = document.getElementById('yesButton');
     const scene = document.getElementById('scene');
     const again = document.getElementById('again');
+    const sceneYes = document.getElementById('sceneYes');
+    const bgm = document.getElementById('bgm');
 
     let finished = false;
 
+    // NO ルート
     noButton.addEventListener('click', () => {
       if (finished) return;
       finished = true;
 
-      // 背景＋Yes/No を上に流して消す
-      scene.classList.add('slide-out');
+      // 上方向にスライドアウト
+      scene.classList.add('slide-up');
 
-      // 少し遅らせて「またね。」をフェードイン
+      // 「またね。」フェードイン
       setTimeout(() => {
         again.classList.add('show');
-      }, 800); // scene の transition と合わせる
+      }, 800);
+    });
+
+    // YES ルート
+    yesButton.addEventListener('click', () => {
+      if (finished) return;
+      finished = true;
+
+      // 下方向にスライドアウト
+      scene.classList.add('slide-down');
+
+      // クラゲ背景シーンを逆方向から入場
+      sceneYes.classList.add('enter');
+
+      // 音楽再生（ファイルをセットしてから使ってください）
+      if (bgm) {
+        bgm.play().catch(() => {
+          // ブラウザの自動再生制限で失敗する場合があります
+        });
+      }
     });
   </script>
 
