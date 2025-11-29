@@ -19,33 +19,85 @@
     body {
       background: #000;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      overflow: hidden; /* 見かけ上のスクロールだけにする */
+      overflow: hidden;
+      color: #fff;
     }
 
-    /* ===== 最初のシーン（はみだす？ ＋ YES / NO） ===== */
+    /* ===== 音が出ることの確認画面（最初に表示される） ===== */
+    .gate {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #111 0%, #000 70%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 32px;
+      z-index: 100; /* 一番手前 */
+      transition: opacity 0.4s ease;
+    }
+
+    .gate-title {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .gate-text {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .gate-button {
+      padding: 12px 32px;
+      border-radius: 999px;
+      border: 1px solid #fff;
+      background: transparent;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.05s ease;
+    }
+
+    .gate-button:active {
+      transform: translateY(1px);
+    }
+
+    .gate-button:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    .gate.hide {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ===== 最初のシーン（back_hami_sp ＋ YES / NO） ===== */
 
     .scene {
       position: fixed;
       inset: 0;
-      background-image: url("back_hami.jpg");
+      background-image: url("back_hami_sp.jpg"); /* スマホ用に軽くした画像 */
       background-size: cover;
-      background-position: center;   /* 常に中央に配置 */
+      background-position: center;
       background-repeat: no-repeat;
       display: flex;
       justify-content: center;
       align-items: flex-end;
       padding-bottom: 16vh;
-      transition: transform 0.8s ease-in, opacity 0.8s ease-in;
+      transition: transform 0.6s ease-in, opacity 0.6s ease-in;
       z-index: 1;
     }
 
-    /* NO のとき：上方向へスライドアウト */
     .scene.slide-up {
       transform: translateY(-100%);
       opacity: 0;
     }
 
-    /* YES のとき：下方向へスライドアウト */
     .scene.slide-down {
       transform: translateY(100%);
       opacity: 0;
@@ -75,13 +127,12 @@
     .buttons button img {
       display: block;
       margin: 0 auto;
-      width: 220px;         /* ほぼ固定サイズ */
+      width: 220px;
       max-width: 42vw;
       height: auto;
       transition: filter 0.15s ease;
     }
 
-    /* タップ時のハイライト */
     .buttons button:active img,
     .buttons button:focus-visible img {
       filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.9));
@@ -143,29 +194,21 @@
     .scene-yes {
       position: fixed;
       inset: 0;
-      overflow: hidden;
+      background-image: url("kurage_sp_blur.jpg"); /* ぼかし済みスマホ用画像 */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
       display: flex;
       justify-content: center;
       align-items: center;
       opacity: 0;
-      transform: translateY(-100%); /* 上の方に待機 */
-      transition: transform 0.8s ease-in, opacity 0.8s ease-in;
+      transform: translateY(-100%);
+      transition: transform 0.6s ease-in, opacity 0.6s ease-in;
       z-index: 1;
     }
 
-    /* ぼかした背景だけに blur をかける */
-    .scene-yes .bg {
-      position: absolute;
-      inset: 0;
-      background-image: url("kurage.jpg");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      filter: blur(8px);
-      transform: scale(1.05); /* ブラーで縁が切れないように少し拡大 */
-    }
-
-    .scene-yes .overlay {
+    .scene-yes::before {
+      content: "";
       position: absolute;
       inset: 0;
       background: radial-gradient(circle at center, rgba(0,0,0,0.0), rgba(0,0,0,0.65));
@@ -192,17 +235,25 @@
       white-space: pre-line;
     }
 
-    /* YES でシーンを入場させる */
     .scene-yes.enter {
       opacity: 1;
       transform: translateY(0);
     }
-
   </style>
 </head>
 <body>
 
-  <!-- 最初のシーン（はみだす？ ＋ YES / NO） -->
+  <!-- 音が出ることの案内と同意画面 -->
+  <div class="gate" id="gate">
+    <div class="gate-title">このサイトでは音が流れます。</div>
+    <div class="gate-text">
+      イヤホンや音量に気をつけて再生してください。<br>
+      「了解」を押すと体験がはじまります。
+    </div>
+    <button class="gate-button" id="gateButton">了解して進む</button>
+  </div>
+
+  <!-- 最初のシーン（はみだしますか？ YES / NO） -->
   <div class="scene" id="scene">
     <div class="buttons">
       <button class="yes" type="button" id="yesButton">
@@ -219,11 +270,8 @@
     <div class="again-text">またね。</div>
   </div>
 
-  <!-- YES ルート：ぼかしたクラゲ背景＋テキスト -->
+  <!-- YES ルート：クラゲ背景＋テキスト -->
   <div class="scene-yes" id="sceneYes">
-    <div class="bg"></div>
-    <div class="overlay"></div>
-
     <div class="content">
       <div class="title">QRgeCODE</div>
       <div class="lyrics">
@@ -245,31 +293,36 @@
     </div>
   </div>
 
-  <!-- 音楽（あとで src を差し替えてください） -->
-  <audio id="bgm" src="music.mp3"></audio>
+  <!-- 音楽ファイル（QRageCODE.mp3 を同じフォルダに置く） -->
+  <audio id="bgm" src="QRageCODE.mp3"></audio>
 
   <script>
-    const noButton = document.getElementById('noButton');
+    const gate      = document.getElementById('gate');
+    const gateBtn   = document.getElementById('gateButton');
+    const noButton  = document.getElementById('noButton');
     const yesButton = document.getElementById('yesButton');
-    const scene = document.getElementById('scene');
-    const again = document.getElementById('again');
-    const sceneYes = document.getElementById('sceneYes');
-    const bgm = document.getElementById('bgm');
+    const scene     = document.getElementById('scene');
+    const again     = document.getElementById('again');
+    const sceneYes  = document.getElementById('sceneYes');
+    const bgm       = document.getElementById('bgm');
 
     let finished = false;
+
+    // 同意画面：「了解して進む」
+    gateBtn.addEventListener('click', () => {
+      gate.classList.add('hide');
+    });
 
     // NO ルート
     noButton.addEventListener('click', () => {
       if (finished) return;
       finished = true;
 
-      // 上方向にスライドアウト
       scene.classList.add('slide-up');
 
-      // 「またね。」フェードイン
       setTimeout(() => {
         again.classList.add('show');
-      }, 800);
+      }, 600);
     });
 
     // YES ルート
@@ -277,16 +330,13 @@
       if (finished) return;
       finished = true;
 
-      // 下方向にスライドアウト
       scene.classList.add('slide-down');
-
-      // クラゲ背景シーンを逆方向から入場
       sceneYes.classList.add('enter');
 
-      // 音楽再生（ファイルをセットしてから使ってください）
+      // 音楽再生
       if (bgm) {
         bgm.play().catch(() => {
-          // ブラウザの自動再生制限で失敗する場合があります
+          // 自動再生制限などで再生に失敗したときは何もしない
         });
       }
     });
