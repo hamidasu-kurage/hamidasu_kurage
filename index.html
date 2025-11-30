@@ -32,7 +32,7 @@
       background-size: contain;                   /* 画像全体が必ず収まるように */
       background-position: center center;
       background-repeat: no-repeat;
-      background-color: #000;                     /* 余白部分は黒で埋める */
+      background-color: #000;                     /* 余白は黒で埋める */
       display: flex;
       justify-content: center;
       align-items: flex-end;
@@ -157,6 +157,37 @@
       opacity: 1;
       transform: translateY(0);
     }
+
+    /* ===== 右下固定の装飾画像（hamidasi_sp.png） ===== */
+
+    .corner-decoration {
+      position: fixed;
+      right: -8vw;      /* 画面外に少し押し出して端を見えにくくする（推測です） */
+      bottom: -8vh;
+      width: 40vw;      /* 画面幅に対する相対サイズ（推測です） */
+      max-width: 260px; /* タブレットで大きくなりすぎないよう制限（推測です） */
+      height: auto;
+      pointer-events: none;  /* ボタン操作の邪魔をしない */
+      z-index: 10;      /* シーンより前面に表示 */
+    }
+
+    /* 縦長スマホ向け微調整（推測です） */
+    @media (max-width: 480px) and (max-aspect-ratio: 9/16) {
+      .corner-decoration {
+        right: -10vw;
+        bottom: -10vh;
+        width: 45vw;
+      }
+    }
+
+    /* 横向きやタブレット向け微調整（推測です） */
+    @media (min-aspect-ratio: 16/10) {
+      .corner-decoration {
+        right: -12vw;
+        bottom: -12vh;
+        width: 30vw;
+      }
+    }
   </style>
 </head>
 <body>
@@ -180,6 +211,9 @@
 
   <!-- YES ルート：歌詞画像を全面表示 -->
   <div class="scene-yes" id="sceneYes"></div>
+
+  <!-- 右下固定の装飾画像 -->
+  <img src="hamidasi_sp.png" alt="" class="corner-decoration">
 
   <!-- 音楽ファイル（QRageCODE.mp3 を同じフォルダに置く） -->
   <audio id="bgm" src="QRageCODE.mp3"></audio>
