@@ -23,76 +23,16 @@
       color: #fff;
     }
 
-    /* 最初は後ろのシーンを全部非表示にする */
-    .scene,
-    .again,
-    .scene-yes {
-      display: none;
-    }
-
-    /* ===== 音が出ることの確認画面 ===== */
-    .gate {
-      position: fixed;
-      inset: 0;
-      min-height: 100vh;
-      background: radial-gradient(circle at center, #111 0%, #000 70%);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 0 32px;
-      z-index: 100;
-      transition: opacity 0.4s ease;
-    }
-
-    .gate-title {
-      font-size: 1.4rem;
-      margin-bottom: 1rem;
-    }
-
-    .gate-text {
-      font-size: 0.95rem;
-      line-height: 1.8;
-      opacity: 0.9;
-      margin-bottom: 2rem;
-    }
-
-    .gate-button {
-      padding: 12px 32px;
-      border-radius: 999px;
-      border: 1px solid #fff;
-      background: transparent;
-      color: #fff;
-      font-size: 1rem;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      transition: background 0.15s ease, color 0.15s ease, transform 0.05s ease;
-    }
-
-    .gate-button:active {
-      transform: translateY(1px);
-    }
-
-    .gate-button:hover {
-      background: #fff;
-      color: #000;
-    }
-
-    .gate.hide {
-      opacity: 0;
-      pointer-events: none;
-    }
-
     /* ===== 最初のシーン（はみだしますか？ YES / NO） ===== */
 
     .scene {
       position: fixed;
       inset: 0;
-      background-image: url("back_hami_sp.jpg");
+      background-image: url("back_hami_sp.jpg");  /* スマホ用に縮小した画像 */
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
+      display: flex;
       justify-content: center;
       align-items: flex-end;
       padding-bottom: 16vh;
@@ -160,6 +100,7 @@
     .again {
       position: fixed;
       inset: 0;
+      display: flex;
       justify-content: center;
       align-items: center;
       pointer-events: none;
@@ -195,12 +136,12 @@
       }
     }
 
-    /* ===== YES 後の画面：画像をそのまま全面表示 ===== */
+    /* ===== YES 後の画面：歌詞画像をそのまま全面表示 ===== */
 
     .scene-yes {
       position: fixed;
       inset: 0;
-      background-image: url("クラゲ歌詞.jpg"); /* 差し替え画像 */
+      background-image: url("クラゲ歌詞_sp.jpg");  /* スマホ用に縮小した歌詞画像 */
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -217,16 +158,6 @@
   </style>
 </head>
 <body>
-
-  <!-- 音が出ることの案内と同意画面 -->
-  <div class="gate" id="gate">
-    <div class="gate-title">このサイトでは音が流れます。</div>
-    <div class="gate-text">
-      イヤホンや音量に気をつけて再生してください。<br>
-      「了解して進む」を押すと体験がはじまります。
-    </div>
-    <button class="gate-button" id="gateButton">了解して進む</button>
-  </div>
 
   <!-- 最初のシーン（はみだしますか？ YES / NO） -->
   <div class="scene" id="scene">
@@ -245,15 +176,13 @@
     <div class="again-text">またね。</div>
   </div>
 
-  <!-- YES ルート：クラゲ歌詞の画像を全面表示 -->
+  <!-- YES ルート：歌詞画像を全面表示 -->
   <div class="scene-yes" id="sceneYes"></div>
 
   <!-- 音楽ファイル（QRageCODE.mp3 を同じフォルダに置く） -->
   <audio id="bgm" src="QRageCODE.mp3"></audio>
 
   <script>
-    const gate      = document.getElementById('gate');
-    const gateBtn   = document.getElementById('gateButton');
     const noButton  = document.getElementById('noButton');
     const yesButton = document.getElementById('yesButton');
     const scene     = document.getElementById('scene');
@@ -262,21 +191,6 @@
     const bgm       = document.getElementById('bgm');
 
     let finished = false;
-
-    // 同意画面：「了解して進む」
-    gateBtn.addEventListener('click', () => {
-      // YES/NO シーンをここで初めて表示
-      scene.style.display    = 'flex';
-      again.style.display    = 'flex';
-      sceneYes.style.display = 'block';
-
-      gate.classList.add('hide');
-
-      // フェードアウト後に完全に消す
-      setTimeout(() => {
-        gate.style.display = 'none';
-      }, 400);
-    });
 
     // NO ルート
     noButton.addEventListener('click', () => {
